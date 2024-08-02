@@ -23,10 +23,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2.3.4
 
       - uses: Blazemeter/github-action@v8.5
         with:
-           apiKey: ""
-           apiSecret: ""
-           testID: ""
+           apiKey: "e946dc9b3c9e7cac7b0b5752"
+           apiSecret: "5b2cfcf04010872e62744570b9230b56ace9cf4daadc37511eed1e9bbcb77f54319003a6"
+           testID: "73841717"
