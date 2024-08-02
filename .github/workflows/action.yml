@@ -29,4 +29,4 @@ jobs:
         with:
            apiKey: "e946dc9b3c9e7cac7b0b5752"
            apiSecret: "e40be493a1253d38eb66bbed439ac05368a14d68d8c02a53ba5ab388d0c74c483146168f"
-           testName: "Windows Update July_600Users"
+           testID: "73841717"
