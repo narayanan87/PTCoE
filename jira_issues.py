@@ -22,7 +22,7 @@ except Exception as e:
 # Fields to extract
 jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
 
-with open('C:\Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/extracted_issues.csv', mode='w', newline='') as csv_file:
+with open('C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/extracted_issues.csv', mode='w', newline='') as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=jirafields)
     writer.writeheader()
 
