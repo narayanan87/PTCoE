@@ -29,7 +29,7 @@ jobs:
       run: python Scripts/jira_issues.py
 
     - name: Upload CSV as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: extracted-issues
         path: Scripts/extracted_issues.csv
