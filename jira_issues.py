@@ -3,7 +3,7 @@ from jira import JIRA
 
 jira_server = "https://kone.atlassian.net"
 jira_user = "narayanan.azhagappan@kone.com"
-jira_pass = ""
+jira_pass = ${{secretes.pass}}
 
 jira_connect = JIRA(server=jira_server, basic_auth=(jira_user, jira_pass))
 
