@@ -34,4 +34,4 @@ for project in jira_projects:
             issue_data = {field: getattr(issue_detail.fields, field, '') for field in jirafields}
             writer.writerow(issue_data)
     
-    print("Data written successfully to extracted_issues.csv")
+print("Data written successfully to extracted_issues.csv")
