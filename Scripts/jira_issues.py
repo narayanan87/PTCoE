@@ -10,6 +10,8 @@ jira_connect = JIRA(server=jira_server, basic_auth=(jira_user, jira_pass))
 
 jira_projects = jira_connect.projects()
 print("List of All Projects")
+for project in jira_projects:
+    print(project.key)
 
 issues = []
 
