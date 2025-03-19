@@ -17,7 +17,7 @@ issues = []
 
 try:
     for project in jira_projects:
-        issues += jira_connect.search_issues(f"project = \"{project.key}\" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()")
+        issues += jira_connect.search_issues(f"project = \"{project.name}\" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()")
     print("Connection Successful")
 except Exception as e:
     print(f"Error connecting: {str(e)}")
