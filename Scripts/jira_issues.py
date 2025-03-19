@@ -23,7 +23,13 @@ except Exception as e:
 # Fields to extract
 jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
 
-with open('C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/extracted_issues.csv', mode='w', newline='') as csv_file:
+# Create directory if it doesn't exist
+output_dir = 'output'
+os.makedirs(output_dir, exist_ok=True)
+
+output_file = os.path.join(output_dir, 'extracted_issues.csv')
+
+with open(output_file, mode='w', newline='') as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=jirafields)
     writer.writeheader()
 
@@ -32,4 +38,4 @@ with open('C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/
         issue_data = {field: getattr(issue_detail.fields, field, '') for field in jirafields}
         writer.writerow(issue_data)
 
-print("Data written successfully to extracted_issues.csv")
+print(f"Data written successfully to {output_file}")
