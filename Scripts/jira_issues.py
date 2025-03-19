@@ -39,3 +39,7 @@ with open(output_file, mode='w', newline='') as csv_file:
         writer.writerow(issue_data)
 
 print(f"Data written successfully to {output_file}")
+
+# Print contents of Scripts directory
+print("Contents of Scripts directory:")
+print(os.listdir(output_dir))
