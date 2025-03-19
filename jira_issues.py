@@ -19,5 +19,16 @@ except Exception as e:
   print("Error connecting: {str(e)}")
 
 # Fields to extract
-fields = ["project", "team", "sprint", "issueType", "summary", "issueKey", "created", "updated", "assignee", "E-Mail", "Tester", "status"]
+jirafields = ["project", "team", "sprint", "issueType", "summary", "issueKey", "created", "updated", "assignee", "E-Mail", "Tester", "status"]
+
+with open('PTCoE/extracted_issues.csv', mode = 'w', newline = '') as csv_file:
+  writer = csv.DictWriter(csv_file, fieldnames = jirafields)
+  writer.writeheader()
+
+for issue in issues:
+  issue_detail = jira.issue(issue)
+  issue_data = {field: getattr(issue_detail.fields, field, '') for field in jirafields}
+  writer.writerow(issue_data)
+
+print("Data written successfully to extracted_issues.csv")
 
