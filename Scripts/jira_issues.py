@@ -24,7 +24,7 @@ except Exception as e:
 jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
 
 # Create directory if it doesn't exist
-output_dir = 'output'
+output_dir = 'C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output'
 os.makedirs(output_dir, exist_ok=True)
 
 output_file = os.path.join(output_dir, 'extracted_issues.csv')
