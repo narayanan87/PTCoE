@@ -17,5 +17,7 @@ jobs:
         with:
           python-version: '3.x'
          
-      - name: Execute Python script
+      - name: Run Python script
+        env:
+          JIRA_PASS: ${{ secrets.pass }}
         run: python Scripts/jira_issues.py
