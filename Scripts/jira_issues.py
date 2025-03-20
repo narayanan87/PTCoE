@@ -32,7 +32,7 @@ except Exception as e:
     print(f"Error connecting: {str(e)}")
 
 # Fields to extract
-jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
+jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "Tester", "status"]
 
 # Create directory if it doesn't exist
 output_dir = 'C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output'
