@@ -1,9 +1,9 @@
 name: Run Python Script
 
-# on:
-#   schedule:
-#     - cron: '* * * * *'
-#   workflow_dispatch:
+on:
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch:
 
 jobs:
   run-python:
@@ -32,4 +32,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: extracted-issues
-        path: output/extracted_issues.csv
+        path: C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output/extracted_issues.csv
