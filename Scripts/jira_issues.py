@@ -49,7 +49,7 @@ with open(output_file, mode='w', newline='') as csv_file:
         issue_data = {
             "project": issue_detail.fields.project.key,
             "team": issue_detail.fields.customfield_10001.name if issue_detail.fields.customfield_10001 else '',
-            "sprint": issue_detail.fields.customfield_10020.name if issue_detail.fields.customfield_10020 else '',
+            "sprint": issue_detail.fields.customfield_10020[0].name if issue_detail.fields.customfield_10020 else '',
             "issuetype": issue_detail.fields.issuetype.name,
             "summary": issue_detail.fields.summary,
             "issuekey": issue.key,
