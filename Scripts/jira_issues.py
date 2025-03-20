@@ -57,7 +57,7 @@ with open(output_file, mode='w', newline='') as csv_file:
             "updated": issue_detail.fields.updated,
             "assignee": issue_detail.fields.assignee.displayName if issue_detail.fields.assignee else '',
             "email": issue_detail.fields.assignee.emailAddress if issue_detail.fields.assignee else '',
-            "tester": issue_detail.fields.customfield_10002.displayName if hasattr(issue_detail.fields.customfield_10002, 'displayName') else '',
+            "Tester": issue_detail.fields.customfield_10702.displayName if hasattr(issue_detail.fields.customfield_10002, 'displayName') else '',
             "status": issue_detail.fields.status.name
         }
         writer.writerow(issue_data)
