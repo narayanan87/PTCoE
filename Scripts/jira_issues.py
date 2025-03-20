@@ -36,6 +36,13 @@ fields = jira_connect.fields()
 field_names = [field['name'] for field in fields]
 field_ids = [field['id'] for field in fields]
 
+# Define the required field names
+required_fields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
+
+# Filter the field names and ids to include only the required fields
+filtered_field_names = [field for field in field_names if field.lower() in required_fields]
+filtered_field_ids = [field_ids[field_names.index(field)] for field in filtered_field_names]
+
 # Create directory if it doesn't exist
 output_dir = 'C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output'
 os.makedirs(output_dir, exist_ok=True)
@@ -43,12 +50,12 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = os.path.join(output_dir, 'extracted_issues.csv')
 
 with open(output_file, mode='w', newline='') as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=field_names)
+    writer = csv.DictWriter(csv_file, fieldnames=filtered_field_names)
     writer.writeheader()
 
     for issue in issues:
         issue_detail = jira_connect.issue(issue.key)
-        issue_data = {field: getattr(issue_detail.fields, field_id, '') for field, field_id in zip(field_names, field_ids)}
+        issue_data = {field: getattr(issue_detail.fields, field_id, '') for field, field_id in zip(filtered_field_names, filtered_field_ids)}
         writer.writerow(issue_data)
 
 print(f"Data written successfully to {output_file}")
