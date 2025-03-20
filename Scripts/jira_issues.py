@@ -31,8 +31,10 @@ try:
 except Exception as e:
     print(f"Error connecting: {str(e)}")
 
-# Fields to extract
-jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
+# Fetch all fields
+fields = jira_connect.fields()
+field_names = [field['name'] for field in fields]
+field_ids = [field['id'] for field in fields]
 
 # Create directory if it doesn't exist
 output_dir = 'C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output'
@@ -41,28 +43,16 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = os.path.join(output_dir, 'extracted_issues.csv')
 
 with open(output_file, mode='w', newline='') as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=jirafields)
+    writer = csv.DictWriter(csv_file, fieldnames=field_names)
     writer.writeheader()
 
     for issue in issues:
         issue_detail = jira_connect.issue(issue.key)
-        issue_data = {
-            "project": issue_detail.fields.project.key,
-            "team": issue_detail.fields.customfield_10001.name if hasattr(issue_detail.fields.customfield_10001, 'name') else '',
-            "sprint": issue_detail.fields.customfield_10020[0].name if issue_detail.fields.customfield_10020 else '',
-            "issuetype": issue_detail.fields.issuetype.name,
-            "summary": issue_detail.fields.summary,
-            "issuekey": issue.key,
-            "created": issue_detail.fields.created,
-            "updated": issue_detail.fields.updated,
-            "assignee": issue_detail.fields.assignee.displayName if issue_detail.fields.assignee else '',
-            "email": issue_detail.fields.assignee.emailAddress if issue_detail.fields.assignee else '',
-            "tester": getattr(issue_detail.fields, 'customfield_10702', {}).get('displayName', '') if getattr(issue_detail.fields, 'customfield_10702', None) else ',
-            "status": issue_detail.fields.status.name
-        }
+        issue_data = {field: getattr(issue_detail.fields, field_id, '') for field, field_id in zip(field_names, field_ids)}
         writer.writerow(issue_data)
 
 print(f"Data written successfully to {output_file}")
 
 # Print contents of Scripts directory
+print("Contents of Scripts directory:")
 print(os.listdir(output_dir))
