@@ -15,7 +15,18 @@ issues = []
 try:
     for project in jira_projects:
         print(f"Processing project: {project}")
-        issues += jira_connect.search_issues(f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()')
+        start_at = 0
+        max_results = 50
+        while True:
+            batch = jira_connect.search_issues(
+                f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()',
+                startAt=start_at,
+                maxResults=max_results
+            )
+            if not batch:
+                break
+            issues.extend(batch)
+            start_at += len(batch)
     print("Connection Successful")
 except Exception as e:
     print(f"Error connecting: {str(e)}")
@@ -35,7 +46,20 @@ with open(output_file, mode='w', newline='') as csv_file:
 
     for issue in issues:
         issue_detail = jira_connect.issue(issue.key)
-        issue_data = {field: getattr(issue_detail.fields, field, '') for field in jirafields}
+        issue_data = {
+            "project": issue_detail.fields.project.key,
+            "team": getattr(issue_detail.fields, 'customfield_team', ''),
+            "sprint": getattr(issue_detail.fields, 'customfield_sprint', ''),
+            "issuetype": issue_detail.fields.issuetype.name,
+            "summary": issue_detail.fields.summary,
+            "issuekey": issue.key,
+            "created": issue_detail.fields.created,
+            "updated": issue_detail.fields.updated,
+            "assignee": issue_detail.fields.assignee.displayName if issue_detail.fields.assignee else '',
+            "email": issue_detail.fields.assignee.emailAddress if issue_detail.fields.assignee else '',
+            "tester": getattr(issue_detail.fields, 'customfield_tester', ''),
+            "status": issue_detail.fields.status.name
+        }
         writer.writerow(issue_data)
 
 print(f"Data written successfully to {output_file}")
