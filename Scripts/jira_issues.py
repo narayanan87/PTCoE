@@ -32,7 +32,7 @@ except Exception as e:
     print(f"Error connecting: {str(e)}")
 
 # Fields to extract
-jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "Tester", "status"]
+jirafields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
 
 # Create directory if it doesn't exist
 output_dir = 'C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output'
@@ -57,7 +57,7 @@ with open(output_file, mode='w', newline='') as csv_file:
             "updated": issue_detail.fields.updated,
             "assignee": issue_detail.fields.assignee.displayName if issue_detail.fields.assignee else '',
             "email": issue_detail.fields.assignee.emailAddress if issue_detail.fields.assignee else '',
-            "Tester": issue_detail.fields.customfield_10702.displayName if hasattr(issue_detail.fields.customfield_10702, 'displayName') else '',
+            "tester": issue_detail.fields.customfield_10702.displayName if hasattr(issue_detail.fields.customfield_10702, 'displayName') else '',
             "status": issue_detail.fields.status.name
         }
         writer.writerow(issue_data)
