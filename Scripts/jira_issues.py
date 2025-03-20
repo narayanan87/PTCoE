@@ -48,8 +48,8 @@ with open(output_file, mode='w', newline='') as csv_file:
         issue_detail = jira_connect.issue(issue.key)
         issue_data = {
             "project": issue_detail.fields.project.key,
-            "team": getattr(issue_detail.fields, 'customfield_team', ''),
-            "sprint": getattr(issue_detail.fields, 'fields.customfield_10020.name', ''),
+            "team": getattr(issue_detail.fields, 'customfield_10001', {}).get('name', ''),
+            "sprint": getattr(issue_detail.fields, 'customfield_10020', {}).get('name', ''),
             "issuetype": issue_detail.fields.issuetype.name,
             "summary": issue_detail.fields.summary,
             "issuekey": issue.key,
@@ -57,7 +57,7 @@ with open(output_file, mode='w', newline='') as csv_file:
             "updated": issue_detail.fields.updated,
             "assignee": issue_detail.fields.assignee.displayName if issue_detail.fields.assignee else '',
             "email": issue_detail.fields.assignee.emailAddress if issue_detail.fields.assignee else '',
-            "tester": getattr(issue_detail.fields, 'fields.customfield_10702.displayName', ''),
+            "tester": getattr(issue_detail.fields, 'customfield_10702', {}).get('displayName', ''),
             "status": issue_detail.fields.status.name
         }
         writer.writerow(issue_data)
