@@ -55,7 +55,13 @@ with open(output_file, mode='w', newline='') as csv_file:
 
     for issue in issues:
         issue_detail = jira_connect.issue(issue.key)
-        issue_data = {field: getattr(issue_detail.fields, field_id, '') for field, field_id in zip(filtered_field_names, filtered_field_ids)}
+        issue_data = {}
+        for field, field_id in zip(filtered_field_names, filtered_field_ids):
+            if field == "team":
+                team_field = getattr(issue_detail.fields, field_id, None)
+                issue_data[field] = team_field.displayName if team_field and hasattr(team_field, 'displayName') else ''
+            else:
+                issue_data[field] = getattr(issue_detail.fields, field_id, '')
         writer.writerow(issue_data)
 
 print(f"Data written successfully to {output_file}")
