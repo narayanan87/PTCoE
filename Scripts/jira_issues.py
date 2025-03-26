@@ -37,7 +37,7 @@ field_names = [field['name'] for field in fields]
 field_ids = [field['id'] for field in fields]
 
 # Define the required field names
-required_fields = ["project", "customfield_10001", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
+required_fields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
 
 # Filter the field names and ids to include only the required fields
 filtered_field_names = [field for field in field_names if field.lower() in required_fields]
@@ -57,9 +57,9 @@ with open(output_file, mode='w', newline='') as csv_file:
         issue_detail = jira_connect.issue(issue.key)
         issue_data = {}
         for field, field_id in zip(filtered_field_names, filtered_field_ids):
-            if field == "customfield_10001":
+            if field == "team":
                 team_field = getattr(issue_detail.fields, field_id, None)
-                issue_data[field] = team_field.name if team_field and hasattr(team_field, 'name') else ''
+                issue_data[field] = team_field.displayName if team_field and hasattr(team_field, 'displayName') else ''
             else:
                 issue_data[field] = getattr(issue_detail.fields, field_id, '')
         writer.writerow(issue_data)
