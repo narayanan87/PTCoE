@@ -2,7 +2,7 @@ import os
 import csv
 from jira import JIRA
 
-jira_server = "https://kone.atlassian.net/"
+jira_server = "https://kone.atlassian.net"
 jira_user = "narayanan.azhagappan@kone.com"
 jira_pass = os.getenv('JIRA_PASS')
 
@@ -21,9 +21,7 @@ try:
             batch = jira_connect.search_issues(
                 f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()',
                 startAt=start_at,
-                maxResults=max_results,
-                fields='*all',
-                expand='names'
+                maxResults=max_results
             )
             if not batch:
                 break
@@ -57,16 +55,7 @@ with open(output_file, mode='w', newline='') as csv_file:
 
     for issue in issues:
         issue_detail = jira_connect.issue(issue.key)
-        issue_data = {}
-        for field, field_id in zip(filtered_field_names, filtered_field_ids):
-            if field == "team":
-                team_field = getattr(issue_detail.fields, field_id, None)
-                issue_data[field] = team_field.displayName if team_field and hasattr(team_field, 'displayName') else ''
-            elif field == "sprint":
-                sprint_field = getattr(issue_detail.fields, field_id, None)
-                issue_data[field] = sprint_field.name if sprint_field and hasattr(sprint_field, 'name') else ''
-            else:
-                issue_data[field] = getattr(issue_detail.fields, field_id, '')
+        issue_data = {field: getattr(issue_detail.fields, field_id, '') for field, field_id in zip(filtered_field_names, filtered_field_ids)}
         writer.writerow(issue_data)
 
 print(f"Data written successfully to {output_file}")
