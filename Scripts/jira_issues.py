@@ -62,6 +62,9 @@ with open(output_file, mode='w', newline='') as csv_file:
             if field == "team":
                 team_field = getattr(issue_detail.fields, field_id, None)
                 issue_data[field] = team_field.displayName if team_field and hasattr(team_field, 'displayName') else ''
+            elif field == "sprint":
+                sprint_field = getattr(issue_detail.fields, field_id, None)
+                issue_data[field] = sprint_field.name if sprint_field and hasattr(sprint_field, 'name') else ''
             else:
                 issue_data[field] = getattr(issue_detail.fields, field_id, '')
         writer.writerow(issue_data)
