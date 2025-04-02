@@ -1,78 +1,71 @@
-import requests
-from openpyxl import Workbook
-from concurrent.futures import ThreadPoolExecutor
+import os
+import csv
+from jira import JIRA
 
-JIRA_USERNAME = "narayanan.azhagappan@kone.com"
-JIRA_API_TOKEN = os.getenv('JIRA_PASS')
-PROJECTS = ["CHSS", "MODS", "NSS", "MATE", "CSCAI", "COTC"]
-THREAD_POOL_SIZE = 1
-BATCH_SIZE = 1000
+jira_server = "https://kone.atlassian.net"
+jira_user = "narayanan.azhagappan@kone.com"
+jira_pass = os.getenv('JIRA_PASS')
 
-def fetch_and_process_issues(project, worksheet):
-    start_at = 0
-    max_results = 1000
-    total = 1
+jira_connect = JIRA(server=jira_server, basic_auth=(jira_user, jira_pass))
 
-    while start_at < total:
-        project_jql = f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task)'
-        response = requests.get(
-            JIRA_BASE_URL,
-            auth=(JIRA_USERNAME, JIRA_API_TOKEN),
-            headers={"Accept": "application/json"},
-            params={"jql": project_jql, "startAt": start_at, "maxResults": max_results}
-        )
+jira_projects = ["CHSS", "MODS", "NSS", "MATE", "CSCAI", "COTC"]
 
-        if response.status_code == 200:
-            data = response.json()
-            total = data.get("total", 0)
-            issues = data.get("issues", [])
-            print(f"[{project}] Total Issues Retrieved: {total}")
-            print(f"[{project}] Processing batch from index: {start_at}")
+issues = []
 
-            for issue in issues:
-                process_issue(issue, worksheet)
+try:
+    for project in jira_projects:
+        print(f"Processing project: {project}")
+        start_at = 0
+        max_results = 50
+        while True:
+            batch = jira_connect.search_issues(
+                f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()',
+                startAt=start_at,
+                maxResults=max_results
+            )
+            if not batch:
+                break
+            issues.extend(batch)
+            start_at += len(batch)
+    print("Connection Successful")
+except Exception as e:
+    print(f"Error connecting: {str(e)}")
 
-            start_at += len(issues)
-        else:
-            print(f"Error fetching issues for project {project}: {response.status_code}")
-            break
+# Fetch all fields
+fields = jira_connect.fields()
+field_names = [field['name'] for field in fields]
+field_ids = [field['id'] for field in fields]
 
-def process_issue(issue, worksheet):
-    key = issue.get("key", "N/A")
-    fields = issue.get("fields", {})
-    project = fields.get("project", {}).get("name", "N/A")
-    issue_type = fields.get("issuetype", {}).get("name", "N/A")
-    status = fields.get("status", {}).get("name", "N/A")
-    summary = fields.get("summary", "N/A")
-    priority = fields.get("priority", {}).get("name", "N/A")
-    created = fields.get("created", "N/A")
-    team = fields.get("customfield_10001", {}).get("name", "N/A")
-    sprint = fields.get("customfield_10020", {}).get("name", "N/A")
-    assignee = fields.get("assignee", {}).get("displayName", "Unassigned")
-    email_address = fields.get("assignee", {}).get("emailAddress", "N/A")
-    tester = fields.get("customfield_10702", {}).get("displayName", "N/A")
+# Define the required field names
+required_fields = ["project", "team", "sprint", "issuetype", "summary", "issuekey", "created", "updated", "assignee", "email", "tester", "status"]
 
-    worksheet.append([
-        key, project, issue_type, status, summary, priority, created,
-        team, sprint, assignee, email_address, tester
-    ])
+# Filter the field names and ids to include only the required fields
+filtered_field_names = [field for field in field_names if field.lower() in required_fields]
+filtered_field_ids = [field_ids[field_names.index(field)] for field in filtered_field_names]
 
-def main():
-    workbook = Workbook()
-    worksheet = workbook.active
-    worksheet.title = "JIRA Issues"
-    worksheet.append([
-        "Issue Key", "Project", "Issue Type", "Status", "Summary", "Priority",
-        "Created", "Team", "Sprint", "Assignee", "Assignee Email", "Tester"
-    ])
+# Create directory if it doesn't exist
+output_dir = 'C:/Users/k64152761/OneDrive - KONE Corporation/Documents/QADashboard/output'
+os.makedirs(output_dir, exist_ok=True)
 
-    with ThreadPoolExecutor(max_workers=THREAD_POOL_SIZE) as executor:
-        futures = [executor.submit(fetch_and_process_issues, project, worksheet) for project in PROJECTS]
-        for future in futures:
-            future.result()
+output_file = os.path.join(output_dir, 'extracted_issues.csv')
 
-    workbook.save("JIRA_Issues.xlsx")
-    print("Data written to JIRA_Issues.xlsx successfully.")
+with open(output_file, mode='w', newline='') as csv_file:
+    writer = csv.DictWriter(csv_file, fieldnames=filtered_field_names)
+    writer.writeheader()
 
-if __name__ == "__main__":
-    main()
+    for issue in issues:
+        issue_detail = jira_connect.issue(issue.key)
+        issue_data = {}
+        for field, field_id in zip(filtered_field_names, filtered_field_ids):
+            if field == "team":
+                team_field = getattr(issue_detail.fields, field_id, None)
+                issue_data[field] = team_field.displayName if team_field and hasattr(team_field, 'displayName') else ''
+            else:
+                issue_data[field] = getattr(issue_detail.fields, field_id, '')
+        writer.writerow(issue_data)
+
+print(f"Data written successfully to {output_file}")
+
+# Print contents of Scripts directory
+print("Contents of Scripts directory:")
+print(os.listdir(output_dir))
