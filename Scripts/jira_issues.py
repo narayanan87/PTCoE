@@ -21,7 +21,8 @@ try:
             batch = jira_connect.search_issues(
                 f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()',
                 startAt=start_at,
-                maxResults=max_results
+                maxResults=max_results,
+                server='https://kone.atlassian.net/rest/api/3/search'
             )
             if not batch:
                 break
@@ -59,10 +60,10 @@ with open(output_file, mode='w', newline='') as csv_file:
         for field, field_id in zip(filtered_field_names, filtered_field_ids):
             if field == "team":
                 team_field = getattr(issue_detail.fields, 'customfield_10001', None)
-                issue_data[field] = team_field.displayName if team_field and hasattr(team_field, 'displayName') else ''
+                issue_data[field] = team_field.name if team_field else ''
             elif field == "sprint":
                 sprint_field = getattr(issue_detail.fields, 'customfield_10020', None)
-                issue_data[field] = sprint_field.name if sprint_field and hasattr(sprint_field, 'name') else ''
+                issue_data[field] = sprint_field.name if sprint_field else ''
             else:
                 issue_data[field] = getattr(issue_detail.fields, field_id, '')
         writer.writerow(issue_data)
