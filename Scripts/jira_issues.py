@@ -60,10 +60,14 @@ with open(output_file, mode='w', newline='') as csv_file:
         for field, field_id in zip(filtered_field_names, filtered_field_ids):
             if field == "team":
                 team_field = getattr(issue_detail.fields, 'customfield_10001', None)
-                issue_data[field] = team_field.name if team_field else ''
+                issue_data[field] = team_field.value if team_field else ''
             elif field == "sprint":
                 sprint_field = getattr(issue_detail.fields, 'customfield_10020', None)
-                issue_data[field] = sprint_field.name if sprint_field else ''
+                if sprint_field:
+                    sprint_name = sprint_field[0].name if isinstance(sprint_field, list) and sprint_field else ''
+                    issue_data[field] = sprint_name
+                else:
+                    issue_data[field] = ''
             else:
                 issue_data[field] = getattr(issue_detail.fields, field_id, '')
         writer.writerow(issue_data)
