@@ -2,11 +2,11 @@ import os
 import csv
 from jira import JIRA
 
-jira_server = "https://kone.atlassian.net"
 jira_user = "narayanan.azhagappan@kone.com"
 jira_pass = os.getenv('JIRA_PASS')
 
-jira_connect = JIRA(server=jira_server, basic_auth=(jira_user, jira_pass))
+options = {'server': jira_server, 'rest_api_version': '3'}
+jira_connect = JIRA(options=options, basic_auth=(jira_user, jira_pass))
 
 jira_projects = ["CHSS", "MODS", "NSS", "MATE", "CSCAI", "COTC"]
 
@@ -21,8 +21,7 @@ try:
             batch = jira_connect.search_issues(
                 f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()',
                 startAt=start_at,
-                maxResults=max_results,
-                jira_server='https://kone.atlassian.net/rest/api/3/search'
+                maxResults=max_results
             )
             if not batch:
                 break
