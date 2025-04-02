@@ -2,6 +2,7 @@ import os
 import csv
 from jira import JIRA
 
+jira_server = "https://kone.atlassian.net"
 jira_user = "narayanan.azhagappan@kone.com"
 jira_pass = os.getenv('JIRA_PASS')
 
