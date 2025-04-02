@@ -22,7 +22,7 @@ try:
                 f'project = "{project}" AND issuetype IN (Epic, Story, Bug, Task) AND sprint IN opensprints()',
                 startAt=start_at,
                 maxResults=max_results,
-                server='https://kone.atlassian.net/rest/api/3/search'
+                jira_server='https://kone.atlassian.net/rest/api/3/search'
             )
             if not batch:
                 break
